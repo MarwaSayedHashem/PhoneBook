@@ -7,15 +7,19 @@
     <div class="row">
         <div class="col-md-12">
             <h1 class="mb-4">New Contact</h1>
-            <form id="contactForm" method="post">
+            <form method="post">
                 {% csrf_token %}
                 <div class="form-group">
                     {{ contact_form.name.label_tag }}
                     {{ contact_form.name|add_class:"form-control" }}
                 </div>
                 <div id="phoneFields">
+                    {{ phone_formset.management_form }}
                     {% for form in phone_formset %}
                         <div class="phone-field border p-3 mb-3 rounded">
+                            {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
                             <div class="form-group">
                                 {{ form.number.label_tag }}
                                 {{ form.number|add_class:"form-control" }}
@@ -39,7 +43,10 @@
                         </div>
                     {% endfor %}
                 </div>
-                <button type="button" id="addPhoneField" class="btn btn-outline-primary mb-3">Add Phone Number</button>
+                <div id="additionalPhoneFields">
+                    {{ additional_phone_formset.management_form }}
+                </div>
+                <button type="button" id="addAdditionalPhoneField" class="btn btn-outline-primary mb-3">Add Additional Phone Number</button>
                 <hr>
                 <button type="submit" class="btn btn-primary">Save</button>
             </form>
@@ -49,28 +56,16 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('addPhoneField').addEventListener('click', function() {
-            var phoneFields = document.getElementById('phoneFields');
-            var newPhoneField = document.createElement('div');
-            newPhoneField.classList.add('phone-field', 'border', 'p-3', 'mb-3', 'rounded');
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addAdditionalPhoneField').addEventListener('click', function() {
+        var additionalPhoneFields = document.getElementById('additionalPhoneFields');
+        var newAdditionalFormField = `
+            <div class="additional-phone-field border p-3 mb-3 rounded">
+                <input type="text" name="additional_phone_numbers-${Date.now()}-additional_number" class="form-control">
+            </div>`;
 
-            var formGroup = document.createElement('div');
-            formGroup.classList.add('form-group');
-
-            var label = document.createElement('label');
-            label.textContent = 'Phone number:';
-            formGroup.appendChild(label);
-
-            var input = document.createElement('input');
-            input.setAttribute('type', 'text');
-            input.setAttribute('name', 'phone_number');
-            input.classList.add('form-control');
-            formGroup.appendChild(input);
-
-            newPhoneField.appendChild(formGroup);
-            phoneFields.appendChild(newPhoneField);
-        });
+        additionalPhoneFields.insertAdjacentHTML('beforeend', newAdditionalFormField);
     });
+});
 </script>
 {% endblock %}
