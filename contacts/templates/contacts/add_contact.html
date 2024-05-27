@@ -1,0 +1,76 @@
+{% extends 'contacts/base.html' %}
+
+{% block title %}Add Contact{% endblock %}
+{% load custom_tags %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">New Contact</h1>
+            <form id="contactForm" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ contact_form.name.label_tag }}
+                    {{ contact_form.name|add_class:"form-control" }}
+                </div>
+                <div id="phoneFields">
+                    {% for form in phone_formset %}
+                        <div class="phone-field border p-3 mb-3 rounded">
+                            <div class="form-group">
+                                {{ form.number.label_tag }}
+                                {{ form.number|add_class:"form-control" }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.country_code.label_tag }}
+                                {{ form.country_code|add_class:"form-control" }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.address.label_tag }}
+                                {{ form.address|add_class:"form-control" }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.email.label_tag }}
+                                {{ form.email|add_class:"form-control" }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.gender.label_tag }}
+                                {{ form.gender|add_class:"form-control" }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="addPhoneField" class="btn btn-outline-primary mb-3">Add Phone Number</button>
+                <hr>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+            <a href="{% url 'contact_list' %}" class="btn btn-secondary mt-3">Back to Contact List</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('addPhoneField').addEventListener('click', function() {
+            var phoneFields = document.getElementById('phoneFields');
+            var newPhoneField = document.createElement('div');
+            newPhoneField.classList.add('phone-field', 'border', 'p-3', 'mb-3', 'rounded');
+
+            var formGroup = document.createElement('div');
+            formGroup.classList.add('form-group');
+
+            var label = document.createElement('label');
+            label.textContent = 'Phone number:';
+            formGroup.appendChild(label);
+
+            var input = document.createElement('input');
+            input.setAttribute('type', 'text');
+            input.setAttribute('name', 'phone_number');
+            input.classList.add('form-control');
+            formGroup.appendChild(input);
+
+            newPhoneField.appendChild(formGroup);
+            phoneFields.appendChild(newPhoneField);
+        });
+    });
+</script>
+{% endblock %}
